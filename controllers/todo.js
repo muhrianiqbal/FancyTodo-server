@@ -11,9 +11,9 @@ class TodoController
         .catch(err => 
         {
             if(err.name == "SequelizeValidationError")
-                res.status(400).json(err);
+                return res.status(400).json(err);
             else
-                res.status(500).json({error : "Internal Server Error"});
+                return res.status(500).json({error : "Internal Server Error"});
         });
     }
 
@@ -21,7 +21,7 @@ class TodoController
     {
         Todo.findAll()
         .then(data => res.status(200).json(data))
-        .catch(err => res.status(500).json({error : "Internal Server Error"}));
+        .catch(() => res.status(500).json({error : "Internal Server Error"}));
     }
 
     static showDatum(req, res)
@@ -32,9 +32,9 @@ class TodoController
         .then(data => 
         {
             if(data)
-                res.status(200).json(data);
+                return res.status(200).json(data);
             else
-                res.status(404).json({error : "Data not found"});
+                return res.status(404).json({error : "Data not found"});
         })
         .catch(err => res.status(500).json({error : "Internal Server Error"}));
     }
@@ -49,16 +49,16 @@ class TodoController
         .then((value) => 
         {
             if(value[0] == [0])
-                res.status(404).json({error : "Data not found"});
+                return res.status(404).json({error : "Data not found"});
             else
-                res.status(200).json(data);
+                return res.status(200).json(data);
         })
         .catch(err => 
         {
             if(err.name == "SequelizeValidationError")
-                res.status(400).json(err);
+                return res.status(400).json(err);
             else
-                res.status(500).json({error : "Internal Server Error"});
+                return res.status(500).json({error : "Internal Server Error"});
         });
     }
 
@@ -69,16 +69,16 @@ class TodoController
 
         Todo.findByPk(id)
         .then(value => 
+        {
+            if(value == null)
+                return res.status(404).json({error : "Data not found"});
+            else
             {
-                if(value == null)
-                    res.status(404).json({error : "Data not found"});
-                else
-                {
-                    data = value;
-                    return Todo.destroy({where : {id}})
-                    .then(() => res.status(200).json(data))
-                }
-            })
+                data = value;
+                return Todo.destroy({where : {id}})
+            }
+        })
+        .then(() => res.status(200).json(data))
         .catch(err => res.status(500).json({error : "Internal Server Error"}));
     
     }
