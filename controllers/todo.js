@@ -5,7 +5,8 @@ class TodoController
     static create(req, res)
     {
         let {title, description, status, due_date} = req.body;
-        let data = {title, description, status, due_date};
+        let {UserId} = req;
+        let data = {title, description, status, due_date, UserId};
         Todo.create(data)
         .then(data => res.status(201).json(data))
         .catch(err => 
@@ -19,8 +20,14 @@ class TodoController
 
     static showAll(req, res)
     {
-        Todo.findAll()
-        .then(data => res.status(200).json(data))
+        // console.log(req.UserId)
+        Todo.findAll({where : {UserId : req.UserId}})
+        .then(data => 
+        {
+            if(data[0] == undefined)
+                return res.status(404).json({message : "U must create a Todo"})
+            return res.status(200).json(data)
+        })
         .catch(() => res.status(500).json({error : "Internal Server Error"}));
     }
 

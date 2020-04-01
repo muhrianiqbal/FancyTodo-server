@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 function encrypt(text)
 {
-    const saltRounds = 27;
+    const saltRounds = 8;
     const salt = bcrypt.genSaltSync(saltRounds);
     return bcrypt.hashSync(text, salt);
 }
