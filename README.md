@@ -1,6 +1,16 @@
 # FancyTodo-server
   _Hacktiv8 Phase 2 Project (Fancy Todo)_
 
+  https://documenter.getpostman.com/view/10918255/SzYbxceF
+
+**Dotenv**
+```
+PORT
+KEY
+ClientSecret
+ClientID
+YOUR_API_KEY
+```
 
 **Create Todo**
 

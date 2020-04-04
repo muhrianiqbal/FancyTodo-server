@@ -1,8 +1,9 @@
 const {Todo} = require("../models");
+const axios = require('axios');
 
 class TodoController
 {
-    static create(req, res)
+    static create(req, res, next)
     {
         let {title, description, status, due_date} = req.body;
         let {UserId} = req;
@@ -11,27 +12,27 @@ class TodoController
         .then(data => res.status(201).json(data))
         .catch(err => 
         {
-            if(err.name == "SequelizeValidationError")
-                return res.status(400).json(err);
-            else
-                return res.status(500).json({error : "Internal Server Error"});
+            return next(err);
         });
     }
 
-    static showAll(req, res)
+    static showAll(req, res, next)
     {
         // console.log(req.UserId)
-        Todo.findAll({where : {UserId : req.UserId}})
+        Todo.findAll({where : {UserId : req.UserId}, order : [["id", "ASC"]]})
         .then(data => 
         {
             if(data[0] == undefined)
                 return res.status(404).json({message : "U must create a Todo"})
             return res.status(200).json(data)
         })
-        .catch(() => res.status(500).json({error : "Internal Server Error"}));
+        .catch(() => 
+        {
+            return next(err);
+        });
     }
 
-    static showDatum(req, res)
+    static showDatum(req, res, next)
     {
         let {id} = req.params;
 
@@ -43,10 +44,13 @@ class TodoController
             else
                 return res.status(404).json({error : "Data not found"});
         })
-        .catch(err => res.status(500).json({error : "Internal Server Error"}));
+        .catch(err => 
+        {
+            return next(err);
+        });
     }
 
-    static update(req, res)
+    static update(req, res, next)
     {
         let {title, description, status, due_date} = req.body;
         let data = {title, description, status, due_date};
@@ -55,6 +59,7 @@ class TodoController
         Todo.update(data, {where : {id}})
         .then((value) => 
         {
+            console.log(value)
             if(value[0] == [0])
                 return res.status(404).json({error : "Data not found"});
             else
@@ -62,14 +67,11 @@ class TodoController
         })
         .catch(err => 
         {
-            if(err.name == "SequelizeValidationError")
-                return res.status(400).json(err);
-            else
-                return res.status(500).json({error : "Internal Server Error"});
+            return next(err)
         });
     }
 
-    static delete(req, res)
+    static delete(req, res, next)
     {
         let {id} = req.params;
         let data = {};
@@ -86,8 +88,21 @@ class TodoController
             }
         })
         .then(() => res.status(200).json(data))
-        .catch(err => res.status(500).json({error : "Internal Server Error"}));
-    
+        .catch(err => 
+        {
+            return next(err);
+        });  
+    }
+
+    static weather(req, res, next)
+    {
+        axios.get(`http://api.airvisual.com/v2/nearest_city?key=${process.env.YOUR_API_KEY}`)
+        .then(function (response) {
+          return res.status(200).json(response.data.data);
+        })
+        .catch(function (err) {
+          return next(err)
+        })
     }
 }
 

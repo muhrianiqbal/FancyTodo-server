@@ -1,13 +1,13 @@
 let {Todo} = require("../models");
-// let {verify} = require("../helpers/jwt");
 
 function authorization(req, res, next)
 {
     let {id} = req.params;
     let {UserId} = req;
-    Todo.findByPk({where : {id}})
+    Todo.findOne({where : {id}})
     .then(data =>
     {
+        // console.log(data)
         if(!data)
             return res.status(404).json({error : "Data not found"});
         if(data.UserId == UserId)

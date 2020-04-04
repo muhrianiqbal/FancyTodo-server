@@ -6,9 +6,9 @@ const {authorization} = require("../middlewares/authorization");
 router.use(authentication);
 router.post("/", Controller.create);
 router.get("/", Controller.showAll);
-router.use(authorization);
-router.get("/:id", Controller.showDatum);
-router.put("/:id", Controller.update);
-router.delete("/:id", Controller.delete);
+router.get("/weather", Controller.weather);
+router.get("/:id", authorization, Controller.showDatum);
+router.put("/:id", authorization, Controller.update);
+router.delete("/:id", authorization, Controller.delete);
 
 module.exports = router;

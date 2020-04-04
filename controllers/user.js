@@ -1,6 +1,7 @@
 let {User} = require("../models");
 let {getToken} = require("../helpers/jwt");
 let {decrypt} = require("../helpers/bcrypt");
+const {OAuth2Client} = require('google-auth-library');
 
 class UserController
 {
@@ -37,6 +38,38 @@ class UserController
             }
         ))
         .catch(err => res.status(400).json({errors : err}));
+    }
+
+    static googleSign(req, res)
+    {
+        const client = new OAuth2Client(process.env);
+        client.verifyIdToken({
+            idToken : req.body.id_token,
+            audience : process.env.ClientID
+        })
+        .then(data =>
+        {
+            // console.log(data);
+            if(!data)
+                return res.status(404).json({error : "Invalid email / password"});
+                        
+            let token = getToken(data.payload);
+            req.headers.usertoken = token;
+            // return User.findOne({Where : {id : data.payload.sub}})
+            return res.status(200).json({accessToken : token})
+        })
+        // .then(user =>
+        // {
+        //     if(!user)
+        //     {
+
+        //     }
+        // })
+        .catch(err =>
+        {
+            console.log(err);   
+            return res.status(500).json({error : err})
+        })
     }
 }
 
