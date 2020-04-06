@@ -20,6 +20,7 @@ module.exports = {
         defaultValue : false
       },
       due_date: {
+        allowNull: false,
         type: Sequelize.DATEONLY
       },
       createdAt: {

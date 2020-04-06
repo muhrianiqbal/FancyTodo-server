@@ -7,14 +7,19 @@ module.exports = (sequelize, DataTypes) =>
   {
     email: 
     {
+      allowNull : false,
       type : DataTypes.STRING,
-      unique: true,
+      unique : true,
       validate:
       {
         isEmail : {msg : "Use email format"}
       }
     },
-    password: DataTypes.STRING
+    password: 
+    {
+      type : DataTypes.STRING,
+      allowNull : false,
+    },
   }, 
   {
     hooks:
